@@ -1,6 +1,9 @@
 // Gera depth map (Depth-Anything-V2-small via transformers.js / onnxruntime, sem torch).
 // Uso: node cli/depth.mjs <imagem> <saida.png>
-import { pipeline } from '@huggingface/transformers';
+import { pipeline, env } from '@huggingface/transformers';
+
+// Espelho do Hugging Face via HF_ENDPOINT (ex.: https://hf-mirror.com). O transformers.js v3 não lê essa var sozinho.
+if (process.env.HF_ENDPOINT) env.remoteHost = process.env.HF_ENDPOINT;
 
 let _depther = null;
 async function getDepther() {

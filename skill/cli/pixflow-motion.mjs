@@ -120,7 +120,9 @@ async function render(specPath, outArg, opts) {
   else console.warn('  ⚠ nenhum Chromium encontrado; Remotion tentará baixar (pode falhar em aarch64). Defina PIXFLOW_CHROME.');
   if (opts.quality === 'fast') args.push('--jpeg-quality=80', '--concurrency=4');
   console.log('  • renderizando ->', out);
-  const r = spawnSync('npx', args, { cwd: SKILL, stdio: 'inherit', env: process.env });
+  // Chama o CLI do Remotion diretamente com o node atual (evita npx/npx.cmd, shell e problemas com espaços no caminho).
+  const remotionCli = join(SKILL, 'node_modules', '@remotion', 'cli', 'remotion-cli.js');
+  const r = spawnSync(process.execPath, [remotionCli, ...args.slice(1)], { cwd: SKILL, stdio: 'inherit', env: process.env });
   if (r.status !== 0) {
     if (gl === 'angle') { console.warn('  ⚠ falhou com --gl=angle, tentando swangle…'); return render(specPath, outArg, { ...opts, gl: 'swangle' }); }
     process.exit(r.status || 1);
